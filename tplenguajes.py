@@ -22,6 +22,12 @@ class Gramatica():
         -------
         resultado : bool
             Indica si la gramática es o no LL1.
+
+        DEVOLVER BOOLEANO.
+        No recibe parámetros. Devuelve booleano de acuerdo a si es o no LL(1)
+        Calcular first, follows y selects de la gramática que ingresó.
+        De ahí, mirar selects y y ver si son o no disyuntos: de ahí el booleano.
+
         """
         pass
 
@@ -43,6 +49,14 @@ class Gramatica():
         devivacion : string
             Representación de las reglas a aplicar para derivar la cadena
             utilizando la gramática.
+
+
+
+        -Método Parse, recibe como parámetro una cadena de texto, string.
+        A partir de ese string devuelve una representación de las derivaciones
+        que se harian a partir de la gramática que se está utilizando.
+        Partiendo del distinguido, todas las reglas que se aplicarían
+        hasta llegar a esa cadena. X=>X Y=>b Y=>b d
         """
         pass
 
