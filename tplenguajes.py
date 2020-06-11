@@ -1,3 +1,4 @@
+producciones = []
 class Gramatica():
     def __init__(self, gramatica):
         """Constructor de la clase.
@@ -29,7 +30,43 @@ class Gramatica():
         De ahí, mirar selects y y ver si son o no disyuntos: de ahí el booleano.
 
         """
-        pass
+
+    def terminal_es_lambda(regla):
+        temp = producciones[regla]
+        temp2 = producciones[regla].split(':')
+        temp3 = temp2[1].split() #En elemento 0 tengo el primer consecuente
+        if temp3[0] == 'lambda':
+            return True
+        else:
+            return False
+
+    def calc_first(indice_regla):  # calculo de first para una regla pasada como parámetro.
+        global Agregar_First
+        firsts = []
+        Agregar_First = True
+        terminal = ''
+        Regla_Temporal = producciones[indice_regla]
+        temporal = []
+        temporal2 = []
+
+        temporal = producciones[indice_regla].split(':') #divide antecedente de consecuente. Pos 0 ant, pos 1 cons
+        temporal2 = temporal[1].split() #divide en una lista cada elemento del consecuente
+
+        if str.isupper(temporal2[0]):  # Si el primer consecuente es un NT, busco los firsts de sus reglas.
+            no_terminal = temporal2[0] #VER
+            #buscar_terminal(no_terminal, Regla_Temporal) #VER
+
+        else:  # Sino, significa que ya tenemos el first de la regla. Si el primer consecuente es terminal, pertenece al first.
+            terminal = temporal2[0]
+            Terminal_lambda = terminal_es_lambda(terminal)
+            if Terminal_lambda == True:  # Si el terminal es lambda
+                terminal = 'lambda'
+            if terminal not in firsts:
+                firsts.append(terminal)
+
+        Agregar_First = False
+        return firsts
+
 
     def parse(self, cadena):
         """Retorna la derivación para una cadena dada utilizando las
