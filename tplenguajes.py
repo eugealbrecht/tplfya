@@ -59,9 +59,10 @@ class Gramatica():
             if not esll1:
                 break
         return esll1
+""""""
 
-
-        """Verifica si una gramática permite realizar derivaciones utilizando
+        """
+        Verifica si una gramática permite realizar derivaciones utilizando
            la técnica LL1.
 
         Returns
@@ -75,7 +76,7 @@ class Gramatica():
         De ahí, mirar selects y y ver si son o no disyuntos: de ahí el booleano.
         
         """
-
+""""""
 
     def terminal_es_lambda(regla):
         temp = producciones[regla]
@@ -112,6 +113,10 @@ class Gramatica():
 
         Agregar_First = False
         return firsts
+
+    def calc_follow(self):
+
+    def calc_select(self):
 
 
     def parse(self, cadena):
