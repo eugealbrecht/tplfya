@@ -7,9 +7,7 @@ reservadas = ["lambda"]
 class Gramatica():
 
     def calc_first(reglas):  # calculo de first para una regla pasada como parámetro.
-        global Agregar_First
-        first = []
-        Agregar_First = True
+        primeros = []
         divisionAC = []
         divisionConsecuente = []
         FirstPorRegla = []
@@ -25,10 +23,10 @@ class Gramatica():
                     terminal = reservadas[0]
                 else:
                     terminal = divisionConsecuente[0]
-                if terminal not in first:
-                    first.append(terminal)
-            FirstPorRegla.append(first)
-         return FirstPorRegla
+                if terminal not in primeros:
+                    primeros.append(terminal)
+            FirstPorRegla.append(primeros)
+        return FirstPorRegla
 
 
     def __init__(self, gramatica):
