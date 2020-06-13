@@ -1,4 +1,8 @@
 producciones = []
+lista=[]
+first=[]
+follow=[]
+select=[]
 class Gramatica():
     def __init__(self, gramatica):
         """Constructor de la clase.
@@ -12,10 +16,51 @@ class Gramatica():
             "A:b A\nA:a\nA:A B c\nA:lambda\nB:b"
         """
         #gramatica = 'X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d'
-        producciones = gramatica.split('\n')  # Genera una lista con cada producción
+        self.gramatica = gramatica
+        self.first = first
+        self.follows = follow
+        self.selects = select
+
+        lista = gramatica.split('\n') #Genera una lista con cada producción
+        producciones = [] #Genero lista vacía que va a contener lista de gramáticas, cada una con su first, follow y select.
+        for l in lista:
+            r = Gramatica()
+            r.gramatica = lista[l]
+            r.first = []
+            r.follows = []
+            r.selects = []
+            producciones[l] = r
+
+        """
+        lista = gramatica.split('\n')  # Genera una lista con cada producción
+        for p in lista:
+            producciones[p] = Gramatica(lista[p], [], [], [])
+            first[p] = []
+            follow[p] = []
+            select[p] = []
+        self.gramatica = lista #tengo guardado una lista con cada producción, y paralelamente una lista de f,f y s.
         #print(producciones)
+        """
 
     def isLL1(self):
+        antecedente = "" #Seteo el antecedente en vacío
+        esll1 = True #Seteo esll1 en True
+        aux_selects = [] #Genero una lista auxiliar de selects.
+        for r in producciones: #Por cada producción
+            if r.gramatica[0] != antecedente: #pregunto si el primer elemento que tenía como antecedente es distinto.
+                antecedente = r.lista[0] #si es, lo guardo como antecedente
+                aux_selects.clear() #Limpio la lista de selects, para generar una nueva.
+            for s in r.selects: #Por cada select que contiene la regla, recorro la lista auxiliar de selects.
+                if s in aux_selects: #si ya lo aencuentro en la lista de selects, no es LL1.
+                    esll1 = False
+                    break
+                else: #Si no está en la lista de selects, lo agrego a los selects.
+                    aux_selects.append(s)
+            if not esll1:
+                break
+        return esll1
+
+
         """Verifica si una gramática permite realizar derivaciones utilizando
            la técnica LL1.
 
@@ -28,8 +73,9 @@ class Gramatica():
         No recibe parámetros. Devuelve booleano de acuerdo a si es o no LL(1)
         Calcular first, follows y selects de la gramática que ingresó.
         De ahí, mirar selects y y ver si son o no disyuntos: de ahí el booleano.
-
+        
         """
+
 
     def terminal_es_lambda(regla):
         temp = producciones[regla]
