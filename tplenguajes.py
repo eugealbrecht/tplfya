@@ -16,20 +16,11 @@ class Gramatica():
             "A:b A\nA:a\nA:A B c\nA:lambda\nB:b"
         """
         #gramatica = 'X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d'
-        self.gramatica = gramatica
-        self.first = first
-        self.follows = follow
-        self.selects = select
-
-        lista = gramatica.split('\n') #Genera una lista con cada producción
-        producciones = [] #Genero lista vacía que va a contener lista de gramáticas, cada una con su first, follow y select.
-        for l in lista:
-            r = Gramatica()
-            r.gramatica = lista[l]
-            r.first = []
-            r.follows = []
-            r.selects = []
-            producciones[l] = r
+        producciones = gramatica.split('\n')  # Genera una lista con cada producción
+        self.gramatica = producciones
+        self.first = []
+        self.follows = []
+        self.selects = []
 
         """
         lista = gramatica.split('\n')  # Genera una lista con cada producción
