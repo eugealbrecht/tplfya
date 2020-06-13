@@ -3,7 +3,34 @@ lista=[]
 first=[]
 follow=[]
 select=[]
+reservadas = ["lambda"]
 class Gramatica():
+
+    def calc_first(reglas):  # calculo de first para una regla pasada como parámetro.
+        global Agregar_First
+        first = []
+        Agregar_First = True
+        divisionAC = []
+        divisionConsecuente = []
+        FirstPorRegla = []
+
+        for r in reglas: #Por cada regla
+            divisionAC = reglas[r].split(":") #Divido antecedente del consecuente
+            divisionConsecuente = divisionAC[1].split() #Armo una lista con cada elemento del consecuente para esa regla
+            if str.isupper(divisionConsecuente[0]): #Si el primer elemento del consecuente es un NT, busco los first de sus reglas
+                no_terminal = divisionConsecuente[0]
+                #buscar_terminal(no_terminal, regla_temporal) #VER
+            else: #Sino, significa que ya tenemos el first de la regla.
+                if divisionConsecuente[0] == reservadas[0]:
+                    terminal = reservadas[0]
+                else:
+                    terminal = divisionConsecuente[0]
+                if terminal not in first:
+                    first.append(terminal)
+            FirstPorRegla.append(first)
+         return FirstPorRegla
+
+
     def __init__(self, gramatica):
         """Constructor de la clase.
 
@@ -18,9 +45,7 @@ class Gramatica():
         #gramatica = 'X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d'
         producciones = gramatica.split('\n')  # Genera una lista con cada producción
         self.gramatica = producciones
-        self.first = []
-        self.follows = []
-        self.selects = []
+        self.first = Gramatica.calc_first(producciones #lista de first.
 
         """
         lista = gramatica.split('\n')  # Genera una lista con cada producción
@@ -34,23 +59,6 @@ class Gramatica():
         """
 
     def isLL1(self):
-        antecedente = "" #Seteo el antecedente en vacío
-        esll1 = True #Seteo esll1 en True
-        aux_selects = [] #Genero una lista auxiliar de selects.
-        for r in producciones: #Por cada producción
-            if r.gramatica[0] != antecedente: #pregunto si el primer elemento que tenía como antecedente es distinto.
-                antecedente = r.lista[0] #si es, lo guardo como antecedente
-                aux_selects.clear() #Limpio la lista de selects, para generar una nueva.
-            for s in r.selects: #Por cada select que contiene la regla, recorro la lista auxiliar de selects.
-                if s in aux_selects: #si ya lo aencuentro en la lista de selects, no es LL1.
-                    esll1 = False
-                    break
-                else: #Si no está en la lista de selects, lo agrego a los selects.
-                    aux_selects.append(s)
-            if not esll1:
-                break
-        return esll1
-
         """
         Verifica si una gramática permite realizar derivaciones utilizando
            la técnica LL1.
@@ -76,29 +84,6 @@ class Gramatica():
         else:
             return False
 
-    def calc_first(indice_regla):  # calculo de first para una regla pasada como parámetro.
-        global Agregar_First
-        firsts = []
-        Agregar_First = True
-        terminal = ''
-        Regla_Temporal = producciones[indice_regla]
-        temporal = []
-        temporal2 = []
-        temporal = producciones[indice_regla].split(':') #divide antecedente de consecuente. Pos 0 ant, pos 1 cons
-        temporal2 = temporal[1].split() #divide en una lista cada elemento del consecuente
-        if str.isupper(temporal2[0]):  # Si el primer consecuente es un NT, busco los firsts de sus reglas.
-            no_terminal = temporal2[0] #VER
-            #buscar_terminal(no_terminal, Regla_Temporal) #VER
-        else:  # Sino, significa que ya tenemos el first de la regla. Si el primer consecuente es terminal, pertenece al first.
-            terminal = temporal2[0]
-            Terminal_lambda = terminal_es_lambda(terminal)
-            if Terminal_lambda == True:  # Si el terminal es lambda
-                terminal = 'lambda'
-            if terminal not in firsts:
-                firsts.append(terminal)
-
-        Agregar_First = False
-        return firsts
 
     def calc_follow(self):
 
