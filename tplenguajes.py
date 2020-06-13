@@ -6,29 +6,6 @@ select=[]
 reservadas = ["lambda"]
 class Gramatica():
 
-    def calc_first(reglas):  # calculo de first para una regla pasada como parámetro.
-        primeros = []
-        divisionAC = []
-        divisionConsecuente = []
-        FirstPorRegla = []
-
-        for r in reglas: #Por cada regla
-            divisionAC = reglas[r].split(":") #Divido antecedente del consecuente
-            divisionConsecuente = divisionAC[1].split() #Armo una lista con cada elemento del consecuente para esa regla
-            if str.isupper(divisionConsecuente[0]): #Si el primer elemento del consecuente es un NT, busco los first de sus reglas
-                no_terminal = divisionConsecuente[0]
-                #buscar_terminal(no_terminal, regla_temporal) #VER
-            else: #Sino, significa que ya tenemos el first de la regla.
-                if divisionConsecuente[0] == reservadas[0]:
-                    terminal = reservadas[0]
-                else:
-                    terminal = divisionConsecuente[0]
-                if terminal not in primeros:
-                    primeros.append(terminal)
-            FirstPorRegla.append(primeros)
-        return FirstPorRegla
-
-
     def __init__(self, gramatica):
         """Constructor de la clase.
 
@@ -55,6 +32,51 @@ class Gramatica():
         self.gramatica = lista #tengo guardado una lista con cada producción, y paralelamente una lista de f,f y s.
         #print(producciones)
         """
+
+def calc_first(reglas):  # calculo de first para una regla pasada como parámetro.
+    primeros = []
+    divisionAC = []
+    divisionConsecuente = []
+    FirstPorRegla = []
+    aux_first = []
+
+    for r in reglas: #Por cada regla
+        divisionAC = reglas[r].split(":") #Divido antecedente del consecuente
+        divisionConsecuente = divisionAC[1].split() #Armo una lista con cada elemento del consecuente para esa regla
+        if str.isupper(divisionConsecuente[0]): #Si el primer elemento del consecuente es un NT, busco los first de sus reglas
+            no_terminal = divisionConsecuente[0]
+            aux_first = buscar_terminal(no_terminal, reglas) #devuelve lista con firsts.
+            for a in aux_first:
+                primeros.append(a)
+        else: #Sino, significa que ya tenemos el first de la regla.
+            if divisionConsecuente[0] == reservadas[0]:
+                terminal = reservadas[0]
+            else:
+                terminal = divisionConsecuente[0]
+            if terminal not in primeros:
+                primeros.append(terminal)
+        FirstPorRegla.append(primeros)
+    return FirstPorRegla #lista de first para cada antecedente
+    #REVISAR METODO
+
+def buscar_terminal(noterminal, producciones):
+    primeros = []
+    antecedenteconsecuente = []
+    consecuente = []
+    for p in producciones:
+        antecedenteconsecuente = p.split(":")
+        consecuente = antecedenteconsecuente[1].split()
+        if p[0] == noterminal:
+            if str.isupper(consecuente[0]): #Si encuentro otro terminal como primer consecuente de la regla, hago recursividad.
+                buscar_terminal(consecuente[0], producciones)
+            else:
+                if consecuente[0] == reservadas[0]:
+                    terminal = reservadas[0]
+                else:
+                    terminal = consecuente[0]
+            primeros.append(terminal)
+    return primeros
+
 
     def isLL1(self):
         """
