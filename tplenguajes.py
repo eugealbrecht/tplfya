@@ -59,7 +59,6 @@ class Gramatica():
             if not esll1:
                 break
         return esll1
-""""""
 
         """
         Verifica si una gramática permite realizar derivaciones utilizando
@@ -76,7 +75,6 @@ class Gramatica():
         De ahí, mirar selects y y ver si son o no disyuntos: de ahí el booleano.
         
         """
-""""""
 
     def terminal_es_lambda(regla):
         temp = producciones[regla]
@@ -95,14 +93,11 @@ class Gramatica():
         Regla_Temporal = producciones[indice_regla]
         temporal = []
         temporal2 = []
-
         temporal = producciones[indice_regla].split(':') #divide antecedente de consecuente. Pos 0 ant, pos 1 cons
         temporal2 = temporal[1].split() #divide en una lista cada elemento del consecuente
-
         if str.isupper(temporal2[0]):  # Si el primer consecuente es un NT, busco los firsts de sus reglas.
             no_terminal = temporal2[0] #VER
             #buscar_terminal(no_terminal, Regla_Temporal) #VER
-
         else:  # Sino, significa que ya tenemos el first de la regla. Si el primer consecuente es terminal, pertenece al first.
             terminal = temporal2[0]
             Terminal_lambda = terminal_es_lambda(terminal)
