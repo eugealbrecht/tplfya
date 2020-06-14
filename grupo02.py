@@ -73,15 +73,16 @@ def buscar_terminal(noterminal, regla, producciones):
                 buscar_terminal(consecuente[0], producciones)
             else:
                 if consecuente[0] == reservadas[0]: #Si es lambda, tengo que buscar de la regla original el que sigue.
-                    terminal = reservadas[0]
                     #volver a la regla original y ver si desp del NT sigue otra cosa pq serían parte de los first tmb.
                     for x in range(0, len(regla)): #Por cada elemento de la regla original
                         if x == noterminal:
                             if x == regla[-1]: #Si ese NT era el último elemento de la lista.
-                                break #VER QUE HACER
+                                primeros.append(reservadas[0]) #Agrego lambda
                             else:
                                 if str.islower(regla[x+1]):
                                     primeros.append(regla[x+1])
+                                else:
+                                    buscar_terminal(regla[x+1], regla, producciones) #VER
                 else:
                     terminal = consecuente[0] #Si no es lambda, lo agrego.
             primeros.append(terminal)
