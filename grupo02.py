@@ -43,37 +43,47 @@ def calc_first(reglas):  # calculo de first para una regla pasada como parámetr
     for r in reglas: #Por cada regla
         divisionAC = reglas[r].split(":") #Divido antecedente del consecuente
         divisionConsecuente = divisionAC[1].split() #Armo una lista con cada elemento del consecuente para esa regla
-        if str.isupper(divisionConsecuente[0]): #Si el primer elemento del consecuente es un NT, busco los first de sus reglas
+        reglaActual = r
+        if str.isupper(divisionConsecuente[0]): #Si el primer elemento del consecuente es un NT, busco los first de ese NT.
             no_terminal = divisionConsecuente[0]
-            aux_first = buscar_terminal(no_terminal, reglas) #devuelve lista con firsts.
+            aux_first = buscar_terminal(no_terminal, r, reglas) #devuelve lista con firsts. Le paso como parámetro ese NT, la regla que estoy evaluando y la gramática completa.
             for a in aux_first:
                 primeros.append(a)
         else: #Sino, significa que ya tenemos el first de la regla.
-            if divisionConsecuente[0] == reservadas[0]:
+            if divisionConsecuente[0] == reservadas[0]: #Si el terminal es lambda, lo guardo
                 terminal = reservadas[0]
             else:
-                terminal = divisionConsecuente[0]
+                terminal = divisionConsecuente[0] #Si no es lambda, lo guardo tmb
             if terminal not in primeros:
-                primeros.append(terminal)
-        FirstPorRegla.append(r, primeros) #En la posición r, inserto los first.
+                primeros.append(terminal) #Si el terminal que encontré no está en la lista, lo agrego.
+        FirstPorRegla.append(r, primeros) #En la posición r, inserto los first. Por cada pos voy a tener los first de cada regla.
     return FirstPorRegla #lista de first para cada antecedente
     #REVISAR METODO
 
-def buscar_terminal(noterminal, producciones):
+
+def buscar_terminal(noterminal, regla, producciones):
     primeros = []
     antecedenteconsecuente = []
     consecuente = []
     for p in producciones:
-        antecedenteconsecuente = p.split(":")
-        consecuente = antecedenteconsecuente[1].split()
-        if p[0] == noterminal:
-            if str.isupper(consecuente[0]): #Si encuentro otro terminal como primer consecuente de la regla, hago recursividad.
+        antecedenteconsecuente = p.split(":") #Divido antecedente del consecuente
+        consecuente = antecedenteconsecuente[1].split() #Divido los consecuentes.
+        if antecedenteconsecuente[0] == noterminal: #Si el antecedente es igual al no terminal que traigo del otro método
+            if str.isupper(consecuente[0]): #Pregunto si es mayúscula -> No terminal. Repito proceso hasta encontrar un terminal.
                 buscar_terminal(consecuente[0], producciones)
             else:
-                if consecuente[0] == reservadas[0]:
+                if consecuente[0] == reservadas[0]: #Si es lambda, tengo que buscar de la regla original el que sigue.
                     terminal = reservadas[0]
+                    #volver a la regla original y ver si desp del NT sigue otra cosa pq serían parte de los first tmb.
+                    for x in range(0, len(regla)): #Por cada elemento de la regla original
+                        if x == noterminal:
+                            if x == regla[-1]: #Si ese NT era el último elemento de la lista.
+                                break #VER QUE HACER
+                            else:
+                                if str.islower(regla[x+1]):
+                                    primeros.append(regla[x+1])
                 else:
-                    terminal = consecuente[0]
+                    terminal = consecuente[0] #Si no es lambda, lo agrego.
             primeros.append(terminal)
     return primeros
 
