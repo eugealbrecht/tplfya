@@ -20,7 +20,8 @@ class Gramatica():
         #gramatica = 'X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d'
         producciones = gramatica.split('\n')  # Genera una lista con cada producción
         self.gramatica = producciones
-        self.first = Gramatica.calc_first(producciones #lista de first.
+        self.first = Gramatica.calc_first(producciones) #lista de first.
+
 
         """
         lista = gramatica.split('\n')  # Genera una lista con cada producción
@@ -39,7 +40,6 @@ def calc_first(reglas):  # calculo de first para una regla pasada como parámetr
     divisionConsecuente = []
     FirstPorRegla = []
     aux_first = []
-
     for r in reglas: #Por cada regla
         divisionAC = reglas[r].split(":") #Divido antecedente del consecuente
         divisionConsecuente = divisionAC[1].split() #Armo una lista con cada elemento del consecuente para esa regla
@@ -55,7 +55,7 @@ def calc_first(reglas):  # calculo de first para una regla pasada como parámetr
                 terminal = divisionConsecuente[0]
             if terminal not in primeros:
                 primeros.append(terminal)
-        FirstPorRegla.append(primeros)
+        FirstPorRegla.append(r, primeros) #En la posición r, inserto los first.
     return FirstPorRegla #lista de first para cada antecedente
     #REVISAR METODO
 
@@ -103,11 +103,6 @@ def buscar_terminal(noterminal, producciones):
             return True
         else:
             return False
-
-
-    def calc_follow(self):
-
-    def calc_select(self):
 
 
     def parse(self, cadena):
