@@ -37,14 +37,9 @@ class Gramatica:
 
 def calc_first(reglas):  # calculo de first para una regla pasada como parámetro.
     primeros = []
-    divisionAC = []
-    divisionConsecuente = []
     FirstPorRegla = []
-    aux_first = []
     indice=0
-    indicee=2
     concatenacion = []
-    cadena = (" ".join(str(x) for x in reglas))
     print('REGLAS')
     print(reglas)
     for r in reglas:  # Por cada regla
@@ -57,7 +52,8 @@ def calc_first(reglas):  # calculo de first para una regla pasada como parámetr
             no_terminal = divisionConsecuente[0]
             aux_first = buscar_terminal(no_terminal, r, reglas)  # devuelve lista con firsts. Le paso como parámetro ese NT, la regla que estoy evaluando y la gramática completa.
             for a in aux_first:
-                concatenacion.append(a)
+                if a not in FirstPorRegla:
+                    concatenacion.append(a)
             StrC = " ".join(concatenacion)
             FirstPorRegla.insert(indice, StrC)
             #FirstPorRegla.insert(indice, primeros)  # En la posición r, inserto los first. Por cada pos voy a tener los first de cada regla.
@@ -73,21 +69,43 @@ def calc_first(reglas):  # calculo de first para una regla pasada como parámetr
 
 
 def buscar_terminal(noterminal, regla, producciones):
+    concat = []
     primeros = []
-    antecedenteconsecuente = []
-    consecuente = []
-    terminal = ''
+    divisionRegla = regla.split(":") #Divido la regla original en antecedente y consecuente
+    divisionConsecuenteRegla = divisionRegla[1].split() #Divido el consecuente en una lista. Cada pos un elemento.
     for p in producciones: #por cada producción
         antecedenteconsecuente = p.split(":")  # Divido antecedente del consecuente
         consecuente = antecedenteconsecuente[1].split()  # Divido los consecuentes de esa regla.
         if antecedenteconsecuente[0] == noterminal:  #Si el antecedente es igual al no terminal que traigo del otro método
             if str.islower(consecuente[0]):
                 if consecuente[0] == 'lambda':
-                    terminal = 'lambda'
-                    primeros.append(terminal)
+                    #ver si despues de esa regla sigue un NT.
+                    ind = 0
+                    for x in divisionConsecuenteRegla: #por cada consecuente, pregunto si es igual al NT
+                        if x == noterminal:
+                            if x == divisionConsecuenteRegla[-1]: #Si es el último elemento
+                                terminal = 'lambda'
+                                if terminal not in primeros:
+                                    primeros.append(terminal)
+                            else: #Si ese NT no es el último elemento, puede venir otro NT o un terminal.
+                                if str.islower(divisionConsecuenteRegla[ind+1]): #Si es minuscula, es terminal
+                                    terminal = divisionConsecuenteRegla[ind+1]
+                                    if terminal not in primeros:
+                                        primeros.append(terminal)
+                                else: #Es mayuscula.
+                                    auxiliar = buscar_terminal(divisionConsecuenteRegla[ind+1], regla, producciones)
+                                    for u in auxiliar:
+                                        if u not in primeros:
+                                            concat.append(u)
+                                    auxiliar2 = " ".join(concat)
+                                    primeros.append(auxiliar2)
+                        ind = ind + 1
                 else:
                     terminal = consecuente[0]
-                    primeros.append(terminal)
+                    if terminal not in primeros:
+                        primeros.append(terminal)
+            if str.isupper(consecuente[0]): #Si el primer consecuente es un NO TERMINAL.
+                buscar_terminal(consecuente[0], p, producciones)
     return primeros
 
 
@@ -138,10 +156,10 @@ def buscar_terminal(noterminal, regla, producciones):
         """
         pass
 
-reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d"
-#primer posicion debería aparecer: a, c y como tiene lambda, b y d.
-#final primer posicion: a, c, b , d.
+#reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d"
 #reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda"
+reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a'
+
 producciones = reglas.split("\n")  # La lista reglas tiene 4 posiciones (regla, firsts, follows y select) por cada posicion
 #print(producciones)
 print(' ')
@@ -149,10 +167,3 @@ print('-------------- F I R S T S ---------------')
 print(' ')
 print(calc_first(producciones))
 
-"""
-for r in range(0, len(producciones)):
-    print(producciones[r], '     ', calc_first(producciones))
-    #producciones[r] = first
-    first=producciones[r]
-    #first = []
-"""
