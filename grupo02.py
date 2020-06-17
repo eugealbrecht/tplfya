@@ -38,37 +38,36 @@ class Gramatica:
 def calc_first(reglas):  # calculo de first para una regla pasada como parámetro.
     primeros = []
     FirstPorRegla = []
-    indice=0
-    concatenacion = []
+    indice = 0
+    union = []
     print('REGLAS')
     print(reglas)
     for r in reglas:  # Por cada regla
         primeros.clear()
-        divisionAC = r.split(":")  # Divido antecedente del consecuente
-        #print (divisionAC)
-        divisionConsecuente = divisionAC[1].split()  # Armo una lista con cada elemento del consecuente para esa regla
         reglaActual = r
-        if str.isupper(divisionConsecuente[0]):  # Si el primer elemento del consecuente es un NT, busco los first de ese NT.
-            no_terminal = divisionConsecuente[0]
-            aux_first = buscar_terminal(no_terminal, r, reglas)  # devuelve lista con firsts. Le paso como parámetro ese NT, la regla que estoy evaluando y la gramática completa.
+        divisionAC = r.split(":")  # Divido antecedente del consecuente
+        consecuentes = divisionAC[1].split()  # Armo una lista con cada elemento del consecuente para esa regla
+        primer_consecuente = list(consecuentes[0])
+        if str.isupper(primer_consecuente[0]):  # Si la primera letra del primer consecuente empieza con mayúscula, es NT.
+            no_terminal = consecuentes[0] #Guardo el no terminal en una variable.
+            aux_first = buscar_terminal(no_terminal, r, reglas)  # Busco los first del no terminal que tengo como first.
             for a in aux_first:
                 if a not in FirstPorRegla:
-                    concatenacion.append(a)
-            StrC = " ".join(concatenacion)
-            FirstPorRegla.insert(indice, StrC)
-            #FirstPorRegla.insert(indice, primeros)  # En la posición r, inserto los first. Por cada pos voy a tener los first de cada regla.
-        else:  # Sino, significa que ya tenemos el first de la regla.
-            if divisionConsecuente[0] == reservadas[0]:  # Si el terminal es lambda, lo guardo
-                terminal = reservadas[0]
+                    union.append(a)
+            cadena_final = " ".join(union)
+            FirstPorRegla.insert(indice, cadena_final)
+        else:  # Si no comienza con mayúsculas, es un terminal -> ya tenemos el first de la regla.
+            if consecuentes[0] == 'lambda':
+                terminal = 'lambda'
             else:
-                terminal = divisionConsecuente[0]  # Si no es lambda, lo guardo tmb
-            FirstPorRegla.insert(indice, terminal)
-        indice = indice + 1
+                terminal = consecuentes[0]
+            FirstPorRegla.insert(indice, terminal) #Agrego en la posición indicada el terminal que es el first.
+        indice += 1
     return FirstPorRegla  # lista de first para cada antecedente
-    # REVISAR METODO
 
 
 def buscar_terminal(noterminal, regla, producciones):
+    concate = []
     concat = []
     primeros = []
     divisionRegla = regla.split(":") #Divido la regla original en antecedente y consecuente
@@ -77,36 +76,44 @@ def buscar_terminal(noterminal, regla, producciones):
         antecedenteconsecuente = p.split(":")  # Divido antecedente del consecuente
         consecuente = antecedenteconsecuente[1].split()  # Divido los consecuentes de esa regla.
         if antecedenteconsecuente[0] == noterminal:  #Si el antecedente es igual al no terminal que traigo del otro método
-            if str.islower(consecuente[0]):
-                if consecuente[0] == 'lambda':
-                    #ver si despues de esa regla sigue un NT.
+            if str.islower(consecuente[0]): #Si el primer consecuente es minúsculas
+                if consecuente[0] == 'lambda': #Si es igual a lambda, veo si sigue en la regla original otra cosa.
                     ind = 0
-                    for x in divisionConsecuenteRegla: #por cada consecuente, pregunto si es igual al NT
+                    for x in divisionConsecuenteRegla: #por cada consecuente de la regla original, pregunto si es igual al NT, para id si es el ultimo
                         if x == noterminal:
-                            if x == divisionConsecuenteRegla[-1]: #Si es el último elemento
+                            if x == divisionConsecuenteRegla[-1]: #Si es el último elemento de la lista, significa que no viene más nada
                                 terminal = 'lambda'
-                                if terminal not in primeros:
+                                if terminal not in primeros: #Guardo lambda en la lista de first.
                                     primeros.append(terminal)
                             else: #Si ese NT no es el último elemento, puede venir otro NT o un terminal.
-                                if str.islower(divisionConsecuenteRegla[ind+1]): #Si es minuscula, es terminal
-                                    terminal = divisionConsecuenteRegla[ind+1]
-                                    if terminal not in primeros:
-                                        primeros.append(terminal)
-                                else: #Es mayuscula.
+                                elemento_siguiente = list(divisionConsecuenteRegla[ind+1])
+                                if str.isupper(elemento_siguiente[0]): #Si es mayúscula, calcular firsts.
                                     auxiliar = buscar_terminal(divisionConsecuenteRegla[ind+1], regla, producciones)
                                     for u in auxiliar:
                                         if u not in primeros:
                                             concat.append(u)
                                     auxiliar2 = " ".join(concat)
                                     primeros.append(auxiliar2)
+                                else: #Es minúsculas, se agrega directamente.
+                                    terminal = divisionConsecuenteRegla[x+1]
+                                    if terminal not in primeros: #Lo agrego a los first
+                                        primeros.append(terminal)
                         ind = ind + 1
-                else:
+                else: #Si es distinto de lambda
                     terminal = consecuente[0]
                     if terminal not in primeros:
                         primeros.append(terminal)
-            if str.isupper(consecuente[0]): #Si el primer consecuente es un NO TERMINAL.
-                buscar_terminal(consecuente[0], p, producciones)
+            else:
+                elemento = list(consecuente[0])
+                if str.isupper(elemento[0]):
+                    auxiliar3 = buscar_terminal(consecuente[0], p, producciones) #ver que cambia si pongo p o r
+                    for m in auxiliar3:
+                        if m not in primeros:
+                            concate.append(m)
+                    auxiliar3 = " ".join(concate)
+                    primeros.append(auxiliar3)
     return primeros
+
 
 
     def isLL1(self):
@@ -158,7 +165,9 @@ def buscar_terminal(noterminal, regla, producciones):
 
 #reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d"
 #reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda"
-reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a'
+#reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a'
+#reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda'
+reglas = 'S:a S e\nA:B\nA:b B e\nA:C\nB:c e\nB:f\nC:b' #VER ESTE CASO
 
 producciones = reglas.split("\n")  # La lista reglas tiene 4 posiciones (regla, firsts, follows y select) por cada posicion
 #print(producciones)
