@@ -114,6 +114,14 @@ def buscar_terminal(noterminal, regla, producciones):
                     primeros.append(auxiliar3)
     return primeros
 
+def calc_select():
+
+    """
+    Por cada regla, preguntar si el first es igual a lambda.
+    Si el first es igual a lambda o contiene lambda, agrego en los selects los follows de esa regla.
+    Si no contiene lambda, los follows son iguales a los first.
+    """
+
 
 
     def isLL1(self):
