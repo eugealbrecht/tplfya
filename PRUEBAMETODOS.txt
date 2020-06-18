@@ -1,0 +1,17 @@
+FUNCIONA FOLLOW
+"S:A b\nS:B a\nA:a A\nA:a\nB:a"
+"S:a S e\nS:A z\nA:B\nA:b B e\nA:C\nB:c C e\nB:d\nC:b"
+"S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d"
+"S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda"
+
+
+NO FUNCIONA FOLLOW 
+
+
+
+
+ROMPE FIRST
+E:E + E\nE:E - E\nE:E\nE:n
+X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d
+A:b A\nA:a\nA:A B c\nA:lambda\nB:b
+S:S a A\nS:b B\nA:a B\nA:c\nB:B b\nB:d
