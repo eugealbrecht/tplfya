@@ -127,7 +127,7 @@ def calc_follows(reglas):
         if i == 0:
             lista_follows[i].append('$') #agrego $ en la posicion 0
         for x in range(0,len(reglas)): #recorro cada regla a ver si lo encuentro como consecuente en alguna.
-            division = reglas[x].split(":")
+            division = reglas[x].split(":") #Antecedente y consecuente
             consecuentes = division[1].split() #lista de consecuentes
             for c in range(0,len(consecuentes)): #por cada consecuente de la regla en la que estoy.
                 if consecuentes[c] == lista_antecedentes[i]: #Si encuentro el antecedente como consecuente
@@ -135,8 +135,9 @@ def calc_follows(reglas):
                         ant = division[0] #Antecedente de la regla donde encontre ese NT como ultimo elemento.
                         for n in range(0,len(lista_antecedentes)):
                             if lista_antecedentes[n] == ant:
-                                if lista_follows[n] not in lista_follows[i]:
-                                    lista_follows[i].append(lista_follows[n])
+                                for elemento in lista_follows[n]:
+                                    if elemento not in lista_follows[i]:
+                                        lista_follows[i].append(elemento)
                     else: #Si no es el último elemento.
                         siguiente = consecuentes[c+1] #elemento siguiente
                         if str.islower(siguiente): #si el siguiente elemento es minusculas, es un terminal.
