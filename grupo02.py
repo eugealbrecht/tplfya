@@ -119,10 +119,8 @@ def calc_follows(reglas):
         antecedentes = r.split(':')
         if antecedentes[0] not in lista_antecedentes:
             lista_antecedentes.append(antecedentes[0])
-    print(lista_antecedentes)
     for a in range(0,len(lista_antecedentes)):
         lista_follows.insert(a,[])
-    print(lista_follows)
     for i in range(0,len(lista_antecedentes)): #POR CADA ANTECEDENTE
         if i == 0:
             lista_follows[i].append('$') #agrego $ en la posicion 0
@@ -151,11 +149,35 @@ def calc_follows(reglas):
                                         lista_follows[i].append(aux_first[m])
     return lista_follows
 
+def calc_select(reglas, listaFirst, listaFollow):
+    SelectsPorRegla = []
+    lista_antecedentes = []
+    for item in range(0,len(listaFirst)):
+        if listaFirst[item] != 'lambda':
+            SelectsPorRegla.insert(item, listaFirst[item])
+        else:
+            for r in reglas:
+                antecedentes = r.split(':')
+                if antecedentes[0] not in lista_antecedentes:
+                    lista_antecedentes.append(antecedentes[0])
+            separacion = reglas[item].split(":")
+            antecedente = separacion[0] #Antecedente.
+            for a in range(0,len(lista_antecedentes)):
+                if lista_antecedentes[a] == antecedente:
+                    concat = listaFollow[a]
+                    auxiliar2 = " ".join(concat)
+                    SelectsPorRegla.insert(item, auxiliar2)
+            #antecedente = reglas[item].split(":")
+            #print(antecedente)
+    return SelectsPorRegla
+
+
+
     """
     def calc_select():
     Por cada regla, preguntar si el first es igual a lambda.
     Si el first es igual a lambda o contiene lambda, agrego en los selects los follows de esa regla.
-    Si no contiene lambda, los follows son iguales a los first.
+    Si no contiene lambda, los selects son iguales a los first.
     """
 
 
@@ -219,6 +241,11 @@ producciones = reglas.split("\n")  # La lista reglas tiene 4 posiciones (regla, 
 print('REGLAS')
 print(producciones)
 print('FIRST')
-print(calc_first(producciones))
+calculo_first = calc_first(producciones)
+print(calculo_first)
 print('FOLLOW')
-print(calc_follows(producciones))
+calculo_follow = calc_follows(producciones)
+print(calculo_follow)
+print('SELECTS')
+calculo_selects = calc_select(producciones, calculo_first,calculo_follow)
+print(calculo_selects)
