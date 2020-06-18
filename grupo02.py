@@ -40,8 +40,6 @@ def calc_first(reglas):  # calculo de first para una regla pasada como parámetr
     FirstPorRegla = []
     indice = 0
     union = []
-    print('REGLAS')
-    print(reglas)
     for r in reglas:  # Por cada regla
         primeros.clear()
         reglaActual = r
@@ -114,7 +112,43 @@ def buscar_terminal(noterminal, regla, producciones):
                     primeros.append(auxiliar3)
     return primeros
 
-
+def calc_follows(reglas):
+    lista_follows = []
+    lista_antecedentes = []
+    for r in reglas:
+        antecedentes = r.split(':')
+        if antecedentes[0] not in lista_antecedentes:
+            lista_antecedentes.append(antecedentes[0])
+    print(lista_antecedentes)
+    for a in range(0,len(lista_antecedentes)):
+        lista_follows.insert(a,[])
+    print(lista_follows)
+    for i in range(0,len(lista_antecedentes)): #POR CADA ANTECEDENTE
+        if i == 0:
+            lista_follows[i].append('$') #agrego $ en la posicion 0
+        for x in range(0,len(reglas)): #recorro cada regla a ver si lo encuentro como consecuente en alguna.
+            division = reglas[x].split(":")
+            consecuentes = division[1].split() #lista de consecuentes
+            for c in range(0,len(consecuentes)): #por cada consecuente de la regla en la que estoy.
+                if consecuentes[c] == lista_antecedentes[i]: #Si encuentro el antecedente como consecuente
+                    if consecuentes[c] == consecuentes[-1]:#pregunto si es el último elemento de la lista.
+                        ant = division[0] #Antecedente de la regla donde encontre ese NT como ultimo elemento.
+                        for n in range(0,len(lista_antecedentes)):
+                            if lista_antecedentes[n] == ant:
+                                if lista_follows[n] not in lista_follows[i]:
+                                    lista_follows[i].append(lista_follows[n])
+                    else: #Si no es el último elemento.
+                        siguiente = consecuentes[c+1] #elemento siguiente
+                        if str.islower(siguiente): #si el siguiente elemento es minusculas, es un terminal.
+                            lista_follows[i].append(siguiente)
+                        else: #buscar los first de ese elemento.
+                            aux_first = calc_first(reglas)
+                            for m in range(0,len(reglas)):
+                                dividir = reglas[m].split(":")
+                                if dividir[0] == siguiente:
+                                    if aux_first[m] not in lista_follows[i]:
+                                        lista_follows[i].append(aux_first[m])
+    return lista_follows
 
     """
     def calc_select():
@@ -172,16 +206,18 @@ def buscar_terminal(noterminal, regla, producciones):
         """
         pass
 
-#reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d"
+reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d"
 #reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda"
 #reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a'
 #reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda'
-reglas = 'S:a S e\nA:B\nA:b B e\nA:C\nB:c e\nB:f\nC:b' #VER ESTE CASO
+#reglas = 'S:a S e\nA:B\nA:b B e\nA:C\nB:c e\nB:f\nC:b' #VER ESTE CASO
 
 producciones = reglas.split("\n")  # La lista reglas tiene 4 posiciones (regla, firsts, follows y select) por cada posicion
 #print(producciones)
-print(' ')
-print('-------------- F I R S T S ---------------')
-print(' ')
-print(calc_first(producciones))
 
+print('REGLAS')
+print(producciones)
+print('FIRST')
+print(calc_first(producciones))
+print('FOLLOW')
+print(calc_follows(producciones))
