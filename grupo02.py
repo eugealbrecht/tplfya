@@ -195,7 +195,9 @@ def calc_select(reglas, listaFirst, listaFollow):
         Calcular first, follows y selects de la gramática que ingresó.
         De ahí, mirar selects y y ver si son o no disyuntos: de ahí el booleano.
 
+
         """
+
 
     def terminal_es_lambda(regla):
         temp = producciones[regla]
@@ -229,7 +231,7 @@ def calc_select(reglas, listaFirst, listaFollow):
         """
         pass
 
-reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d"
+#reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d"
 #reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda"
 #reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a'
 #reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda'
