@@ -150,7 +150,7 @@ class Gramatica:
                                 if lista_antecedentes[n] == ant:
                                     for elemento in lista_follows[n]:
                                         if elemento not in lista_follows[i]:
-                                            lista_follows[i].append(elemento)
+                                            lista_follows[i].extend(elemento)
                         else:  # Si no es el último elemento.
                             siguiente = consecuentes[c + 1]  # elemento siguiente
                             if str.islower(siguiente):  # si el siguiente elemento es minusculas, es un terminal.
@@ -161,7 +161,7 @@ class Gramatica:
                                     dividir = reglas[m].split(":")
                                     if dividir[0] == siguiente:
                                         if aux_first[m] not in lista_follows[i]:
-                                            lista_follows[i].append(aux_first[m])
+                                            lista_follows[i].extend(aux_first[m])
         return lista_follows
 
     def calc_select(reglas, listaFirst, listaFollow):
