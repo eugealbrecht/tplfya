@@ -146,7 +146,7 @@ def calc_follows(reglas):
                             if lista_antecedentes[n] == ant:
                                 for elemento in lista_follows[n]:
                                     if elemento not in lista_follows[i]:
-                                        lista_follows[i].append(elemento)
+                                        lista_follows.insert(i,elemento)
                     else: #Si no es el último elemento.
                         siguiente = consecuentes[c+1] #elemento siguiente
                         if str.isupper(siguiente): #si el siguiente elemento es mayucula, buscar los first de ese elemento.
@@ -161,8 +161,9 @@ def calc_follows(reglas):
                                         else:
                                             if '$' not in lista_follows[i]:
                                                 lista_follows[i] = '$'
+                                else:
                                     if aux_first[m] not in lista_follows[i]:
-                                        lista_follows[i].append(aux_first[m])
+                                        lista_follows.insert(i,aux_first[m])
                                 continue
                         else:
                             lista_follows[i].append(siguiente)
