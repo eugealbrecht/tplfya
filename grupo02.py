@@ -5,7 +5,6 @@ follow = []
 select = []
 reservadas = ["lambda"]
 
-
 class Gramatica:
 
     def __init__(self, gramatica):
@@ -22,14 +21,29 @@ class Gramatica:
         self.first = Gramatica.calc_first(self.gramatica) #le paso las producciones como parámetro
         self.follows = Gramatica.calc_follows(self.gramatica)
         self.selects = Gramatica.calc_select(self.gramatica, self.first, self.follows)
-        """
+        self.antecedentes = Gramatica.calculo_antecedentes(producciones)
+        self.no_terminales = Gramatica.calculo_no_terminales(producciones)
         print('FIRST')
         print(self.first)
         print('FOLLOW')
         print(self.follows)
         print('SELECT')
         print(self.selects)
-        """
+
+    def calculo_antecedentes(producciones):
+        lista_antecedentes = []
+        for p in producciones:
+            antecedentes = p.split(':')
+            lista_antecedentes.append(antecedentes[0])
+        return lista_antecedentes
+
+    def calculo_no_terminales(producciones):
+        lista_antecedentes = []
+        for p in producciones:
+            antecedentes = p.split(':')
+            if antecedentes[0] not in lista_antecedentes:
+                lista_antecedentes.append(antecedentes[0])
+        return lista_antecedentes
 
     def calc_first(reglas):  # calculo de first para una regla pasada como parámetro.
         primeros = []
@@ -59,6 +73,10 @@ class Gramatica:
                     terminal = consecuentes[0]
                 FirstPorRegla.insert(indice, terminal)  # Agrego en la posición indicada el terminal que es el first.
             indice += 1
+        for elemento in range(0,len(FirstPorRegla)):
+            hacerSplit = FirstPorRegla[elemento].split()
+            listaNueva = list(hacerSplit)
+            FirstPorRegla[elemento] = listaNueva
         return FirstPorRegla  # lista de first para cada antecedente
 
     def busq_terminal(noterminal, regla, producciones):
@@ -77,14 +95,16 @@ class Gramatica:
                         ind = 0
                         for x in divisionConsecuenteRegla:  # por cada consecuente de la regla original, pregunto si es igual al NT, para id si es el ultimo
                             if x == noterminal:
-                                if x == divisionConsecuenteRegla[-1]:  # Si es el último elemento de la lista, significa que no viene más nada
+                                if x == divisionConsecuenteRegla[
+                                    -1]:  # Si es el último elemento de la lista, significa que no viene más nada
                                     terminal = 'lambda'
                                     if terminal not in primeros:  # Guardo lambda en la lista de first.
                                         primeros.append(terminal)
                                 else:  # Si ese NT no es el último elemento, puede venir otro NT o un terminal.
                                     elemento_siguiente = list(divisionConsecuenteRegla[ind + 1])
                                     if str.isupper(elemento_siguiente[0]):  # Si es mayúscula, calcular firsts.
-                                        auxiliar = Gramatica.busq_terminal(divisionConsecuenteRegla[ind + 1], regla, producciones)
+                                        auxiliar = Gramatica.busq_terminal(divisionConsecuenteRegla[ind + 1], regla,
+                                                                           producciones)
                                         for u in auxiliar:
                                             if u not in primeros:
                                                 concat.append(u)
@@ -102,7 +122,8 @@ class Gramatica:
                 else:
                     elemento = list(consecuente[0])
                     if str.isupper(elemento[0]):
-                        auxiliar3 = Gramatica.busq_terminal(consecuente[0], p, producciones)  # ver que cambia si pongo p o r
+                        auxiliar3 = Gramatica.busq_terminal(consecuente[0], p,
+                                                            producciones)  # ver que cambia si pongo p o r
                         for m in auxiliar3:
                             if m not in primeros:
                                 concate.append(m)
@@ -112,11 +133,7 @@ class Gramatica:
 
     def calc_follows(reglas):
         lista_follows = []
-        lista_antecedentes = []
-        for r in reglas:
-            antecedentes = r.split(':')
-            if antecedentes[0] not in lista_antecedentes:
-                lista_antecedentes.append(antecedentes[0])
+        lista_antecedentes = Gramatica.calculo_no_terminales(reglas)
         for a in range(0, len(lista_antecedentes)):
             lista_follows.insert(a, [])
         for i in range(0, len(lista_antecedentes)):  # POR CADA ANTECEDENTE
@@ -150,22 +167,25 @@ class Gramatica:
     def calc_select(reglas, listaFirst, listaFollow):
         SelectsPorRegla = []
         lista_antecedentes = []
+        lista_no_terminales = []
         for item in range(0, len(listaFirst)):
-            if listaFirst[item] != 'lambda':
+            if 'lambda' not in listaFirst[item]:
                 SelectsPorRegla.insert(item, listaFirst[item])
-            else:
-                for r in reglas:
-                    antecedentes = r.split(':')
-                    if antecedentes[0] not in lista_antecedentes:
-                        lista_antecedentes.append(antecedentes[0])
-                separacion = reglas[item].split(":")
-                antecedente = separacion[0]  # Antecedente.
-                for a in range(0, len(lista_antecedentes)):
-                    if lista_antecedentes[a] == antecedente:
-                        concat = listaFollow[a]
-                        auxiliar2 = " ".join(concat)
-                        SelectsPorRegla.insert(item, auxiliar2)
+            else: #en item hay un lambda
+                lista_antecedentes = Gramatica.calculo_antecedentes(reglas)
+                lista_no_terminales = Gramatica.calculo_no_terminales(reglas)
+                antecedente = lista_antecedentes[item]
+                for i in range(0,len(lista_no_terminales)):
+                    if lista_no_terminales[i] == antecedente:
+                        SelectsPorRegla.insert(item,listaFollow[i])
         return SelectsPorRegla
+
+    """
+            for elemento in range(0,len(FirstPorRegla)):
+            hacerSplit = FirstPorRegla[elemento].split()
+            listaNueva = list(hacerSplit)
+            FirstPorRegla[elemento] = listaNueva
+    """
 
     def isLL1(self):
         """
@@ -178,10 +198,41 @@ class Gramatica:
         DEVOLVER BOOLEANO.
         No recibe parámetros. Devuelve booleano de acuerdo a si es o no LL(1)
         Calcular first, follows y selects de la gramática que ingresó.
-        De ahí, mirar selects y y ver si son o no disyuntos: de ahí el booleano.
-
+        De ahí, mirar selects y y ver si son o no disyuntos: de ahí el booleano
+        """
 
         """
+        conjunto_select = []
+        posicion = 0
+        antecedente = self.antecedentes[0] #Guardo como primer antecedente el primer antecedente de las reglas, el distinguido
+        for a in range(0, len(self.no_terminales)):
+            conjunto_select.insert(a, [])
+        print(conjunto_select)
+        for e in range(0,len(self.antecedentes)):
+            for a in range(0,len(self.no_terminales)):
+                if self.no_terminales[a] == self.antecedentes[e]:
+                    conjunto_select[a].append(self.selects[e])
+        print(conjunto_select)
+                for c in range(0,len(conjunto_select)):
+            nuevaLista = conjunto_select[c]
+            nuevaLista2 = nuevaLista.split()
+        print(conjunto_select)
+         for a in range(0,len(self.no_terminales)):
+            
+            
+
+
+        for a in range(0,len(self.no_terminales)): #Por cada antecedente de la regla.
+            if self.no_terminales[a] == antecedente:
+                conjunto_select[posicion].append(self.selects[a])
+            else:
+                posicion=posicion+1
+                antecedente = self.no_terminales[a]
+        print(conjunto_select)
+        """
+
+
+
 
     def parse(self, cadena):
         """Retorna la derivación para una cadena dada utilizando las
