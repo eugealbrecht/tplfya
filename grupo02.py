@@ -23,6 +23,7 @@ class Gramatica:
         self.selects = Gramatica.calc_select(self.gramatica, self.first, self.follows)
         self.antecedentes = Gramatica.calculo_antecedentes(producciones)
         self.no_terminales = Gramatica.calculo_no_terminales(producciones)
+        self.terminales = Gramatica.calculo_terminales(producciones)
         print('FIRST')
         print(self.first)
         print('FOLLOW')
@@ -45,19 +46,30 @@ class Gramatica:
                 lista_antecedentes.append(antecedentes[0])
         return lista_antecedentes
 
+    def calculo_terminales(producciones):
+        lista_terminales = []
+        for p in producciones:
+            division = p.split(":") #Divido ant de consec.
+            consecuentes = division[1].split() #Consecuentes
+            for c in consecuentes:
+                if str.islower(c):
+                    if c not in lista_terminales:
+                        lista_terminales.append(c)
+        return lista_terminales
+
     def calc_first(reglas):  # calculo de first para una regla pasada como parámetro.
         primeros = []
         FirstPorRegla = []
         indice = 0
         union = []
+        lista_terminales = Gramatica.calculo_terminales(reglas)
         for r in reglas:  # Por cada regla
             primeros.clear()
             reglaActual = r
             divisionAC = r.split(":")  # Divido antecedente del consecuente
             consecuentes = divisionAC[1].split()  # Armo una lista con cada elemento del consecuente para esa regla
             primer_consecuente = list(consecuentes[0])
-            if str.isupper(
-                    primer_consecuente[0]):  # Si la primera letra del primer consecuente empieza con mayúscula, es NT.
+            if str.isupper(primer_consecuente[0]):  # Si la primera letra del primer consecuente empieza con mayúscula, es NT.
                 no_terminal = consecuentes[0]  # Guardo el no terminal en una variable.
                 aux_first = Gramatica.busq_terminal(no_terminal, r, reglas)
                 #aux_first = busq_terminal(no_terminal, r, reglas)  # Busco los first del no terminal que tengo como first.
@@ -76,7 +88,11 @@ class Gramatica:
         for elemento in range(0,len(FirstPorRegla)):
             hacerSplit = FirstPorRegla[elemento].split()
             listaNueva = list(hacerSplit)
-            FirstPorRegla[elemento] = listaNueva
+            listaNueva2 = []
+            for x in listaNueva:
+                if x not in listaNueva2 and x in lista_terminales:
+                    listaNueva2.append(x)
+            FirstPorRegla[elemento] = listaNueva2
         return FirstPorRegla  # lista de first para cada antecedente
 
     def busq_terminal(noterminal, regla, producciones):
@@ -88,32 +104,32 @@ class Gramatica:
         for p in producciones:  # por cada producción
             antecedenteconsecuente = p.split(":")  # Divido antecedente del consecuente
             consecuente = antecedenteconsecuente[1].split()  # Divido los consecuentes de esa regla.
-            if antecedenteconsecuente[
-                0] == noterminal:  # Si el antecedente es igual al no terminal que traigo del otro método
-                if str.islower(consecuente[0]):  # Si el primer consecuente es minúsculas
+            if antecedenteconsecuente[0] == noterminal:  # Si el antecedente es igual al no terminal que traigo del otro método
+                if str.islower(consecuente[0]):  # Si el primer consecuente es minúscula
                     if consecuente[0] == 'lambda':  # Si es igual a lambda, veo si sigue en la regla original otra cosa.
                         ind = 0
                         for x in divisionConsecuenteRegla:  # por cada consecuente de la regla original, pregunto si es igual al NT, para id si es el ultimo
                             if x == noterminal:
-                                if x == divisionConsecuenteRegla[
-                                    -1]:  # Si es el último elemento de la lista, significa que no viene más nada
+                                if x == divisionConsecuenteRegla[-1]:  # Si es el último elemento de la lista, significa que no viene más nada
                                     terminal = 'lambda'
                                     if terminal not in primeros:  # Guardo lambda en la lista de first.
                                         primeros.append(terminal)
                                 else:  # Si ese NT no es el último elemento, puede venir otro NT o un terminal.
                                     elemento_siguiente = list(divisionConsecuenteRegla[ind + 1])
                                     if str.isupper(elemento_siguiente[0]):  # Si es mayúscula, calcular firsts.
-                                        auxiliar = Gramatica.busq_terminal(divisionConsecuenteRegla[ind + 1], regla,
-                                                                           producciones)
+                                        auxiliar = Gramatica.busq_terminal(divisionConsecuenteRegla[ind + 1], regla, producciones)
+                                        if 'lambda' in auxiliar:
+                                            primeros.append('lambda')
                                         for u in auxiliar:
-                                            if u not in primeros:
-                                                concat.append(u)
+                                            for m in u:
+                                                if m not in primeros:
+                                                    concat.append(m)
                                         auxiliar2 = " ".join(concat)
                                         primeros.append(auxiliar2)
                                     else:  # Es minúsculas, se agrega directamente.
-                                        terminal = divisionConsecuenteRegla[x + 1]
+                                        terminal = elemento_siguiente
                                         if terminal not in primeros:  # Lo agrego a los first
-                                            primeros.append(terminal)
+                                            primeros.append(elemento_siguiente)
                             ind = ind + 1
                     else:  # Si es distinto de lambda
                         terminal = consecuente[0]
@@ -257,9 +273,9 @@ class Gramatica:
         """
         pass
 
-reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d"
-#reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda"
-#reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a'
-#reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda'
-#reglas = 'S:a S e\nA:B\nA:b B e\nA:C\nB:c e\nB:f\nC:b' #VER ESTE CASO
+#reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d" #ESTÁ OK.
+reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda" #REVISAR FOLLOWS Y SELECTS.
+#reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a' #ESTA OK
+#reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda' #VER FOLLOWS Y SELECTS.
+#reglas = "S:a S e\nS:A z\nA:B\nA:b B e\nA:C\nB:c C e\nB:d\nC:b" #VER ESTE CASO NO ES LL1.
 nuevaGramatica = Gramatica(reglas)
