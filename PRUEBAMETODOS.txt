@@ -17,3 +17,11 @@ ROMPE FIRST
 	A:b A\nA:a\nA:A B c\nA:lambda\nB:b
 	S:S a A\nS:b B\nA:a B\nA:c\nB:B b\nB:d
 	S:A B c\nA:a\nA:lambda\nB:b\nB:lambda
+
+FUNCIONA SELECT
+S:A b\nS:B a\nA:a A\nA:a\nB:a
+
+NO FUNCIONA SELECT
+S:a S e\nS:A z\nA:B\nA:b B e\nA:C\nB:c C e\nB:d\nC:b (VER BIEN)
+
+
