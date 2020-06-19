@@ -9,7 +9,7 @@ FUNCIONA FOLLOW
 
 
 ROMPE FOLLOW 
-	E:T A\nA:+ T A\nA:- T A\nA:lambda\nT:F B\nB:* F B\nB:/ F B\nB:lambda\nF:n\nF:(E)
+	E:T A\nA:+ T A\nA:- T A\nA:lambda\nT:F B\nB:* F B\nB:/ F B\nB:lambda\nF:n\nF:(E)    (NO ROMPE, PERO CALCULA MAL LOS FOLLOWS)
 
 ROMPE FIRST
 	E:E + E\nE:E - E\nE:E\nE:n
