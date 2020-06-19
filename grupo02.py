@@ -22,12 +22,14 @@ class Gramatica:
         self.first = Gramatica.calc_first(self.gramatica) #le paso las producciones como parámetro
         self.follows = Gramatica.calc_follows(self.gramatica)
         self.selects = Gramatica.calc_select(self.gramatica, self.first, self.follows)
+        """
         print('FIRST')
         print(self.first)
         print('FOLLOW')
         print(self.follows)
         print('SELECT')
         print(self.selects)
+        """
 
     def calc_first(reglas):  # calculo de first para una regla pasada como parámetro.
         primeros = []
@@ -163,16 +165,8 @@ class Gramatica:
                         concat = listaFollow[a]
                         auxiliar2 = " ".join(concat)
                         SelectsPorRegla.insert(item, auxiliar2)
-                # antecedente = reglas[item].split(":")
-                # print(antecedente)
         return SelectsPorRegla
 
-    """
-    def calc_select():
-    Por cada regla, preguntar si el first es igual a lambda.
-    Si el first es igual a lambda o contiene lambda, agrego en los selects los follows de esa regla.
-    Si no contiene lambda, los selects son iguales a los first.
-    """
     def isLL1(self):
         """
         Verifica si una gramática permite realizar derivaciones utilizando
@@ -188,15 +182,6 @@ class Gramatica:
 
 
         """
-
-    def terminal_es_lambda(regla):
-        temp = producciones[regla]
-        temp2 = producciones[regla].split(':')
-        temp3 = temp2[1].split()  # En elemento 0 tengo el primer consecuente
-        if temp3[0] == 'lambda':
-            return True
-        else:
-            return False
 
     def parse(self, cadena):
         """Retorna la derivación para una cadena dada utilizando las
