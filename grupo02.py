@@ -138,8 +138,7 @@ class Gramatica:
                 else:
                     elemento = list(consecuente[0])
                     if str.isupper(elemento[0]):
-                        auxiliar3 = Gramatica.busq_terminal(consecuente[0], p,
-                                                            producciones)  # ver que cambia si pongo p o r
+                        auxiliar3 = Gramatica.busq_terminal(consecuente[0], p, producciones)  # ver que cambia si pongo p o r
                         for m in auxiliar3:
                             if m not in primeros:
                                 concate.append(m)
@@ -151,6 +150,7 @@ class Gramatica:
         aux_first = []
         lista_extra = []
         lista_follows = []
+        lista_terminales = Gramatica.calculo_terminales(reglas)
         lista_antecedentes = Gramatica.calculo_no_terminales(reglas)
         for a in range(0, len(lista_antecedentes)): #Por cada antecedente que encuentro, le creo una lista vacía. Resultado va a ser lista de listas.
             lista_follows.insert(a, [])
@@ -168,7 +168,7 @@ class Gramatica:
                                 if lista_antecedentes[n] == ant:
                                     for elemento in lista_follows[n]:
                                         if elemento not in lista_follows[i]:
-                                            lista_follows[i].extend(elemento)
+                                            lista_follows[i].append(elemento)
                         else:  # Si no es el último elemento, tengo que ver que sigue: follow.
                             siguiente = consecuentes[c + 1]  # elemento siguiente
                             if str.islower(siguiente):  # si el siguiente elemento es minusculas, es un terminal.
@@ -177,7 +177,7 @@ class Gramatica:
                                 lista_extra = Gramatica.buscar_first(reglas[x],siguiente,reglas,lista_follows)
                                 for item in lista_extra:
                                     if item not in lista_follows[i]:
-                                        lista_follows[i].append(item)
+                                        lista_follows[i].extend(item)
         return lista_follows
 
     def buscar_first(regla, cons, producciones, follow_list):  # llega regla y el consecuente siguiente.
@@ -194,16 +194,13 @@ class Gramatica:
                         for h in range(0,len(cons_regla)):
                             if cons_regla[h] == cons:
                                 if cons == cons_regla[-1]: #Si es el último elemento
-                                    #agregar follow del antecedente. estoy en el ultimo consecuente de Regla parametro.
-                                    #divregla[0] tengo el antecedente.
-                                    #buscar follows de ese antecedente.
                                     lista_antecedentes = Gramatica.calculo_no_terminales(producciones)
                                     for g in range(0,len(lista_antecedentes)):
                                         if lista_antecedentes[g] == divRegla[0]:
                                             for fol in follow_list[g]:
                                                 if fol not in first_retorno:
-                                                    newlist.append(fol)
-                                                    first_retorno.append(newlist)
+                                                    #newlist.append(fol)
+                                                    first_retorno.append(fol)
                                 else:
                                     prox_siguiente = cons_regla[h+1]
                                     if str.islower(prox_siguiente):
@@ -283,8 +280,8 @@ class Gramatica:
         pass
 
 #reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d" #ESTÁ OK.
-reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda" #REVISAR FOLLOWS Y SELECTS.
+reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda" #REVISAR SELECTS.
 #reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a' #ESTA OK
-#reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda' #VER FOLLOWS Y SELECTS.
+#reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda' #ESTÁ OK - ver follow como guarda
 #reglas = "S:a S e\nS:A z\nA:B\nA:b B e\nA:C\nB:c C e\nB:d\nC:b" #VER ESTE CASO NO ES LL1.
 nuevaGramatica = Gramatica(reglas)
