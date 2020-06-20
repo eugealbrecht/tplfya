@@ -223,21 +223,16 @@ class Gramatica:
         for item in range(0, len(listaFirst)):
             if 'lambda' not in listaFirst[item]:
                 SelectsPorRegla.insert(item, listaFirst[item])
-            else: #en item hay un lambda
+            else:  # en item hay un lambda
                 lista_antecedentes = Gramatica.calculo_antecedentes(reglas)
                 lista_no_terminales = Gramatica.calculo_no_terminales(reglas)
                 antecedente = lista_antecedentes[item]
-                for i in range(0,len(lista_no_terminales)):
+                for i in range(0, len(lista_no_terminales)):
                     if lista_no_terminales[i] == antecedente:
-                        SelectsPorRegla.insert(item,listaFollow[i])
+                        nuevaLista = listaFirst[item] + listaFollow[i]
+                        nuevaLista.remove('lambda')
+                        SelectsPorRegla.insert(item, nuevaLista)
         return SelectsPorRegla
-
-    """
-            for elemento in range(0,len(FirstPorRegla)):
-            hacerSplit = FirstPorRegla[elemento].split()
-            listaNueva = list(hacerSplit)
-            FirstPorRegla[elemento] = listaNueva
-    """
 
     def isLL1(self):
         """
