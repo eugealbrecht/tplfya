@@ -49,9 +49,9 @@ class Gramatica:
     def calculo_terminales(producciones):
         lista_terminales = []
         for p in producciones:
-            division = p.split(":") #Divido ant de consec.
-            consecuentes = division[1].split() #Consecuentes
-            for c in consecuentes:
+            divAnt = p.split(":")  # Divido ant de consec.
+            conse = divAnt[1].split()  # Consecuentes
+            for c in conse:
                 if str.islower(c):
                     if c not in lista_terminales:
                         lista_terminales.append(c)
@@ -148,37 +148,76 @@ class Gramatica:
         return primeros
 
     def calc_follows(reglas):
+        aux_first = []
+        lista_extra = []
         lista_follows = []
         lista_antecedentes = Gramatica.calculo_no_terminales(reglas)
-        for a in range(0, len(lista_antecedentes)):
+        for a in range(0, len(lista_antecedentes)): #Por cada antecedente que encuentro, le creo una lista vacía. Resultado va a ser lista de listas.
             lista_follows.insert(a, [])
         for i in range(0, len(lista_antecedentes)):  # POR CADA ANTECEDENTE
             if i == 0:
-                lista_follows[i].append('$')  # agrego $ en la posicion 0
+                lista_follows[i].append('$')  # Si es el distinguido, agrego $ en sus follows.
             for x in range(0, len(reglas)):  # recorro cada regla a ver si lo encuentro como consecuente en alguna.
                 division = reglas[x].split(":")  # Antecedente y consecuente
-                consecuentes = division[1].split()  # lista de consecuentes
-                for c in range(0, len(consecuentes)):  # por cada consecuente de la regla en la que estoy.
+                consecuentes = division[1].split()  # Lista de consecuentes
+                for c in range(0, len(consecuentes)):  # Por cada consecuente de la regla en la que estoy.
                     if consecuentes[c] == lista_antecedentes[i]:  # Si encuentro el antecedente como consecuente
-                        if consecuentes[c] == consecuentes[-1]:  # pregunto si es el último elemento de la lista.
+                        if consecuentes[c] == consecuentes[-1]:  # Pregunto si es el último elemento consecuente.
                             ant = division[0]  # Antecedente de la regla donde encontre ese NT como ultimo elemento.
-                            for n in range(0, len(lista_antecedentes)):
+                            for n in range(0, len(lista_antecedentes)): #Agrego los follows de ese antecedente en el anterior.
                                 if lista_antecedentes[n] == ant:
                                     for elemento in lista_follows[n]:
                                         if elemento not in lista_follows[i]:
                                             lista_follows[i].extend(elemento)
-                        else:  # Si no es el último elemento.
+                        else:  # Si no es el último elemento, tengo que ver que sigue: follow.
                             siguiente = consecuentes[c + 1]  # elemento siguiente
                             if str.islower(siguiente):  # si el siguiente elemento es minusculas, es un terminal.
                                 lista_follows[i].append(siguiente)
-                            else:  # buscar los first de ese elemento.
-                                aux_first = Gramatica.calc_first(reglas)
-                                for m in range(0, len(reglas)):
-                                    dividir = reglas[m].split(":")
-                                    if dividir[0] == siguiente:
-                                        if aux_first[m] not in lista_follows[i]:
-                                            lista_follows[i].extend(aux_first[m])
+                            else:  # buscar los first de ese elemento. Es un NT. primer follow.
+                                lista_extra = Gramatica.buscar_first(reglas[x],siguiente,reglas,lista_follows)
+                                for item in lista_extra:
+                                    if item not in lista_follows[i]:
+                                        lista_follows[i].append(item)
         return lista_follows
+
+    def buscar_first(regla, cons, producciones, follow_list):  # llega regla y el consecuente siguiente.
+        first_retorno = []
+        newlist = []
+        aux_first = Gramatica.calc_first(producciones) # first de todas las reglas.
+        for n in range(0, len(producciones)):  # Por cada regla
+            dividir = producciones[n].split(":")
+            if dividir[0] == cons:  # Encontré la posición del first. (m).
+                for elemento in aux_first[n]:
+                    if elemento == 'lambda': #Si encuentro lambda en los first, tengo que ver si hay un prox elemento.
+                        divRegla = regla.split(":")
+                        cons_regla = divRegla[1].split() #Consecuentes
+                        for h in range(0,len(cons_regla)):
+                            if cons_regla[h] == cons:
+                                if cons == cons_regla[-1]: #Si es el último elemento
+                                    #agregar follow del antecedente. estoy en el ultimo consecuente de Regla parametro.
+                                    #divregla[0] tengo el antecedente.
+                                    #buscar follows de ese antecedente.
+                                    lista_antecedentes = Gramatica.calculo_no_terminales(producciones)
+                                    for g in range(0,len(lista_antecedentes)):
+                                        if lista_antecedentes[g] == divRegla[0]:
+                                            for fol in follow_list[g]:
+                                                if fol not in first_retorno:
+                                                    newlist.append(fol)
+                                                    first_retorno.append(newlist)
+                                else:
+                                    prox_siguiente = cons_regla[h+1]
+                                    if str.islower(prox_siguiente):
+                                        if prox_siguiente not in first_retorno:
+                                            first_retorno.append(prox_siguiente)
+                                    else:
+                                        nueva_lista = Gramatica.buscar_first(regla, prox_siguiente, producciones, follow_list)
+                                        for k in nueva_lista:
+                                            if k not in first_retorno:
+                                                first_retorno.append(k)
+                    else:
+                        if elemento not in first_retorno:
+                            first_retorno.append(aux_first[n])
+        return first_retorno
 
     def calc_select(reglas, listaFirst, listaFollow):
         SelectsPorRegla = []
