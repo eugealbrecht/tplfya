@@ -69,13 +69,14 @@ class Gramatica:
             divisionAC = r.split(":")  # Divido antecedente del consecuente
             consecuentes = divisionAC[1].split()  # Armo una lista con cada elemento del consecuente para esa regla
             primer_consecuente = list(consecuentes[0])
-            if str.isupper(primer_consecuente[0]):  # Si la primera letra del primer consecuente empieza con mayúscula, es NT.
+            if str.isupper(
+                    primer_consecuente[0]):  # Si la primera letra del primer consecuente empieza con mayúscula, es NT.
                 no_terminal = consecuentes[0]  # Guardo el no terminal en una variable.
                 aux_first = Gramatica.busq_terminal(no_terminal, r, reglas)
-                #aux_first = busq_terminal(no_terminal, r, reglas)  # Busco los first del no terminal que tengo como first.
+                # aux_first = busq_terminal(no_terminal, r, reglas)  # Busco los first del no terminal que tengo como first.
+                union.clear()
                 for a in aux_first:
-                    if a not in FirstPorRegla:
-                        union.append(a)
+                    union.append(a)
                 cadena_final = " ".join(union)
                 FirstPorRegla.insert(indice, cadena_final)
             else:  # Si no comienza con mayúsculas, es un terminal -> ya tenemos el first de la regla.
@@ -85,7 +86,7 @@ class Gramatica:
                     terminal = consecuentes[0]
                 FirstPorRegla.insert(indice, terminal)  # Agrego en la posición indicada el terminal que es el first.
             indice += 1
-        for elemento in range(0,len(FirstPorRegla)):
+        for elemento in range(0, len(FirstPorRegla)):
             hacerSplit = FirstPorRegla[elemento].split()
             listaNueva = list(hacerSplit)
             listaNueva2 = []
