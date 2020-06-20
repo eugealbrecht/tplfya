@@ -274,9 +274,9 @@ class Gramatica:
         """
         pass
 
-#reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d" #ESTÁ OK.
-reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda" #REVISAR SELECTS.
-#reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a' #ESTA OK
-#reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda' #ESTÁ OK - ver follow como guarda
-#reglas = "S:a S e\nS:A z\nA:B\nA:b B e\nA:C\nB:c C e\nB:d\nC:b" #VER ESTE CASO NO ES LL1.
+#reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d" #ESTÁ OK. ES LL1.
+#reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda" # ESTA OK. NO ES LL1.
+#reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a' #ESTA OK. NO ES LL1.
+#reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda' #ESTÁ OK - ES LL1
+reglas = "S:a S e\nS:A z\nA:B\nA:b B e\nA:C\nB:c C e\nB:d\nC:b" #VER FIRSTS - NO ES LL1.
 nuevaGramatica = Gramatica(reglas)
