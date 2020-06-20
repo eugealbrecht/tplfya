@@ -52,7 +52,9 @@ class Gramatica:
             divAnt = p.split(":")  # Divido ant de consec.
             conse = divAnt[1].split()  # Consecuentes
             for c in conse:
-                if str.islower(c):
+                if str.isupper(c):
+                    continue
+                else:
                     if c not in lista_terminales:
                         lista_terminales.append(c)
         return lista_terminales
@@ -69,8 +71,7 @@ class Gramatica:
             divisionAC = r.split(":")  # Divido antecedente del consecuente
             consecuentes = divisionAC[1].split()  # Armo una lista con cada elemento del consecuente para esa regla
             primer_consecuente = list(consecuentes[0])
-            if str.isupper(
-                    primer_consecuente[0]):  # Si la primera letra del primer consecuente empieza con mayúscula, es NT.
+            if str.isupper(primer_consecuente[0]):  # Si la primera letra del primer consecuente empieza con mayúscula, es NT.
                 no_terminal = consecuentes[0]  # Guardo el no terminal en una variable.
                 aux_first = Gramatica.busq_terminal(no_terminal, r, reglas)
                 # aux_first = busq_terminal(no_terminal, r, reglas)  # Busco los first del no terminal que tengo como first.
@@ -279,5 +280,6 @@ class Gramatica:
 #reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda" # ESTA OK. NO ES LL1.
 #reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a' #ESTA OK. NO ES LL1.
 #reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda' #ESTÁ OK - ES LL1
-reglas = "S:a S e\nS:A z\nA:B\nA:b B e\nA:C\nB:c C e\nB:d\nC:b" #ESTÁ OK - NO ES LL1.
+#reglas = "S:a S e\nS:A z\nA:B\nA:b B e\nA:C\nB:c C e\nB:d\nC:b" #ESTÁ OK - NO ES LL1.
+#reglas = "S:+ B\nS:- B\nS:d A\nB:d A\nA:d A\nA:. F\nA:e C\nA:lambda\nF:d G\nG:d G\nG:e G\nG:lambda\nX:+ H\nX:- H\nX:d D\nH:d D\nH:lambda\nE:lambda" #ESTÁ OK. ES LL1.
 nuevaGramatica = Gramatica(reglas)
