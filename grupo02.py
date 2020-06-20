@@ -256,36 +256,6 @@ class Gramatica:
         De ahí, mirar selects y y ver si son o no disyuntos: de ahí el booleano
         """
 
-        """
-        conjunto_select = []
-        posicion = 0
-        antecedente = self.antecedentes[0] #Guardo como primer antecedente el primer antecedente de las reglas, el distinguido
-        for a in range(0, len(self.no_terminales)):
-            conjunto_select.insert(a, [])
-        print(conjunto_select)
-        for e in range(0,len(self.antecedentes)):
-            for a in range(0,len(self.no_terminales)):
-                if self.no_terminales[a] == self.antecedentes[e]:
-                    conjunto_select[a].append(self.selects[e])
-        print(conjunto_select)
-                for c in range(0,len(conjunto_select)):
-            nuevaLista = conjunto_select[c]
-            nuevaLista2 = nuevaLista.split()
-        print(conjunto_select)
-         for a in range(0,len(self.no_terminales)):
-            
-            
-
-
-        for a in range(0,len(self.no_terminales)): #Por cada antecedente de la regla.
-            if self.no_terminales[a] == antecedente:
-                conjunto_select[posicion].append(self.selects[a])
-            else:
-                posicion=posicion+1
-                antecedente = self.no_terminales[a]
-        print(conjunto_select)
-        """
-
 
 
 
