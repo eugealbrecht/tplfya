@@ -18,18 +18,28 @@ class Gramatica:
         """
         producciones = gramatica.split('\n')  # Genera una lista con cada producción
         self.gramatica = producciones
-        self.first = Gramatica.calc_first(self.gramatica) #le paso las producciones como parámetro
-        self.follows = Gramatica.calc_follows(self.gramatica)
-        self.selects = Gramatica.calc_select(self.gramatica, self.first, self.follows)
-        self.antecedentes = Gramatica.calculo_antecedentes(producciones)
-        self.no_terminales = Gramatica.calculo_no_terminales(producciones)
-        self.terminales = Gramatica.calculo_terminales(producciones)
+        calculo_first = []
+        calculo_first = Gramatica.calc_first(producciones)
+        self.first = calculo_first #le paso las producciones como parámetro
+        if 'Recursividad' in calculo_first:
+            self.follows = 'Recursividad'
+            self.selects = 'Recursividad'
+            self.LL1 = False
+        else:
+            self.follows = Gramatica.calc_follows(self.gramatica)
+            self.selects = Gramatica.calc_select(self.gramatica, self.first, self.follows)
+            self.antecedentes = Gramatica.calculo_antecedentes(producciones)
+            self.no_terminales = Gramatica.calculo_no_terminales(producciones)
+            self.terminales = Gramatica.calculo_terminales(producciones)
+            self.LL1 = Gramatica.isLL1(self)
         print('FIRST')
         print(self.first)
         print('FOLLOW')
         print(self.follows)
         print('SELECT')
         print(self.selects)
+        print('LL1')
+        print(self.LL1)
 
     def calculo_antecedentes(producciones):
         lista_antecedentes = []
@@ -71,6 +81,10 @@ class Gramatica:
             divisionAC = r.split(":")  # Divido antecedente del consecuente
             consecuentes = divisionAC[1].split()  # Armo una lista con cada elemento del consecuente para esa regla
             primer_consecuente = list(consecuentes[0])
+            #Evaluar recursividad.
+            if divisionAC[0] == consecuentes[0]: #Encontré como primer consecuente el mismo antecedente.
+                FirstPorRegla.append("Recursividad")
+                break
             if str.isupper(primer_consecuente[0]):  # Si la primera letra del primer consecuente empieza con mayúscula, es NT.
                 no_terminal = consecuentes[0]  # Guardo el no terminal en una variable.
                 aux_first = Gramatica.busq_terminal(no_terminal, r, reglas)
@@ -92,9 +106,11 @@ class Gramatica:
             listaNueva = list(hacerSplit)
             listaNueva2 = []
             for x in listaNueva:
+                if 'Recursividad' in listaNueva:
+                    FirstPorRegla = 'Recursividad'
                 if x not in listaNueva2 and x in lista_terminales:
                     listaNueva2.append(x)
-            FirstPorRegla[elemento] = listaNueva2
+                    FirstPorRegla[elemento] = listaNueva2
         return FirstPorRegla  # lista de first para cada antecedente
 
     def busq_terminal(noterminal, regla, producciones):
@@ -156,6 +172,11 @@ class Gramatica:
         lista_antecedentes = Gramatica.calculo_no_terminales(reglas)
         for a in range(0, len(lista_antecedentes)): #Por cada antecedente que encuentro, le creo una lista vacía. Resultado va a ser lista de listas.
             lista_follows.insert(a, [])
+        lista_First = Gramatica.calc_first(reglas)
+        for m in lista_First:
+                if 'Recursividad' in lista_First:
+                    lista_follows.append('Recursividad')
+                    break
         for i in range(0, len(lista_antecedentes)):  # POR CADA ANTECEDENTE
             if i == 0:
                 lista_follows[i].append('$')  # Si es el distinguido, agrego $ en sus follows.
@@ -249,6 +270,45 @@ class Gramatica:
         Calcular first, follows y selects de la gramática que ingresó.
         De ahí, mirar selects y y ver si son o no disyuntos: de ahí el booleano
         """
+        antecedente = ''
+        es_LL1 = True
+        lista_selects = []
+        for r in producciones:
+            if r.regla[0] != antecedente:
+                #print(r.regla[0])
+                antecedente = r.regla[0]
+                lista_selects.clear()
+            for s in r.selects:
+                print(r.selects)
+                if s in lista_selects:
+                    es_LL1 = False
+                    break
+                else:
+                    lista_selects.append(s)
+            if not es_LL1:
+                break
+                print("\nParsingTable\n")
+                #table = {}
+                for key in producciones:
+                    for value in producciones[key]:
+                        if value != 'lambda':
+                            for elemento in first(value, reglas):
+                                print(elemento)
+                                TablaGenerada[key, elemento] = value
+                for key, val in TablaGenerada.items():
+                    print(key, "=>", val)
+                new_table = {}
+                for pair in TablaGenerada:
+                    new_table[pair[1]] = {}
+                for pair in TablaGenerada:
+                    new_table[pair[1][pair[0]]] = TablaGenerada[pair]
+                print("\n\nTable\n")
+                print(producciones.DataFrame(new_table).fillna('-'))
+                print("\n")
+                # Validar si es recursivo
+
+        # RESULTADO FINAL
+        return es_LL1
 
 
 
@@ -286,7 +346,7 @@ class Gramatica:
 
 
 #reglas = "E:T A\nA:+ T A\nA:- T A\nA:lambda\nT:F B\nB:* F B\nB:/ F B\nB:lambda\nF:n\nF:(E)" #VER FIRSTS y FOLLOWS
-#reglas = "E:E + E\nE:E - E\nE:E\nE:n" #ROMPE. AGREGAR VALIDACIÓN RECURSIÓN.
-#reglas = "X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d" #IDEM
+reglas = "E:E + E\nE:E - E\nE:E\nE:n" #ROMPE. AGREGAR VALIDACIÓN RECURSIÓN.
+#reglas = "X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d" #IDEM VER
 #reglas = "A:b A\nA:a\nA:A B c\nA:lambda\nB:b" #IDEM
 nuevaGramatica = Gramatica(reglas)
