@@ -32,14 +32,6 @@ class Gramatica:
             self.no_terminales = Gramatica.calculo_no_terminales(producciones)
             self.terminales = Gramatica.calculo_terminales(producciones)
             self.LL1 = Gramatica.isLL1(self)
-        print('FIRST')
-        print(self.first)
-        print('FOLLOW')
-        print(self.follows)
-        print('SELECT')
-        print(self.selects)
-        print('LL1')
-        print(self.LL1)
 
     def calculo_antecedentes(producciones):
         lista_antecedentes = []
@@ -343,10 +335,11 @@ class Gramatica:
 #reglas = "S:a S e\nS:A z\nA:B\nA:b B e\nA:C\nB:c C e\nB:d\nC:b" #ESTÁ OK - NO ES LL1.
 #reglas = "S:+ B\nS:- B\nS:d A\nB:d A\nA:d A\nA:. F\nA:e C\nA:lambda\nF:d G\nG:d G\nG:e G\nG:lambda\nX:+ H\nX:- H\nX:d D\nH:d D\nH:lambda\nE:lambda" #ESTÁ OK. ES LL1.
 #reglas = "F:X Y\nX:a B R\nX:a C Q\nB:b\nB:d\nC:e\nC:b\nR:r\nQ:q\nY:b" #ESTA OK. NO ES LL1.
+#reglas = "E:E + E\nE:E - E\nE:E\nE:n" #RECURSIVIDAD. DEVUELVE FALSE EN LL1. OK
+#reglas = "X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d" #RECURSIVIDAD. DEVUELVE FALSE EN LL1. OK
+#reglas = "A:b A\nA:a\nA:A B c\nA:lambda\nB:b" #RECURSIVIDAD. DEVUELVE FALSE EN LL1. OK.
 
 
 #reglas = "E:T A\nA:+ T A\nA:- T A\nA:lambda\nT:F B\nB:* F B\nB:/ F B\nB:lambda\nF:n\nF:(E)" #VER FIRSTS y FOLLOWS
-reglas = "E:E + E\nE:E - E\nE:E\nE:n" #ROMPE. AGREGAR VALIDACIÓN RECURSIÓN.
-#reglas = "X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d" #IDEM VER
-#reglas = "A:b A\nA:a\nA:A B c\nA:lambda\nB:b" #IDEM
+
 nuevaGramatica = Gramatica(reglas)
