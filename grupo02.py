@@ -297,3 +297,72 @@ class Gramatica:
         Partiendo del distinguido, todas las reglas que se aplicarían
         hasta llegar a esa cadena. X=>X Y=>b Y=>b d
         """
+        if (self.isLL1()):
+            if es_LL1:
+                for NT in self.no_terminales:
+                    self.tabla[NT, '$'] = ([])
+                    for term in self.terminales:
+                        if term != 'lambda':
+                            # por cada combinación de terminal y no terminal, colocamos los consecuentes
+                            self.tabla[NT, term] = ([])
+                            for NT in self.no_terminales:
+                                self.tabla[NT, '$'] = ([])
+                                for term in self.terminales:
+                                    if term != 'lambda':
+                                        # por cada combinación de terminal y no terminal, colocamos los consecuentes
+                                        self.tabla[NT, term] = ([])
+                                        contador = 0
+                                        lista = self.selects
+                                        for sublista in lista:
+                                            for select in sublista:
+                                                self.tabla[self.antecedentes[contador], select] = self.consecuentes[
+                                                    contador]
+                                            contador = contador + 1
+
+        c_en = cadena.split(" ")
+        derivaciones = self.distinguido
+        pila = []  # se irá modificando, lo que se inserta va al revés
+        pila.append('$')
+        pila.append(self.distinguido)
+        lookahead = c_en[0]
+        es_r = 1
+        es_a = 0
+        aux = []
+
+        while es_r:
+            tope = pila[-1]
+            if tope in self.no_terminales and (lookahead in self.terminales or lookahead == '$'):
+                consecuente = self.tabla[tope, lookahead]
+                if len(consecuente) != 0:
+                    if 'lambda' in consecuente:
+                        pila.pop()
+                    else:
+                        pila.pop()
+                        for item in reversed(consecuente):
+                            pila.append(item)
+                else:
+                    es_r = False
+                if es_r:
+                    derivaciones = derivaciones + "=>"
+                    for x in aux:
+                        if x != "$":
+                            derivaciones = derivaciones + x
+                    for item in reversed(pila):
+                        if item != '$':
+                            derivaciones = derivaciones + x
+                    if derivaciones[-1] == " ":
+                        derivaciones = derivaciones[:-1]
+            else:  # si en tope pila hay terminal o $
+                if tope == lookahead:
+                    pila.pop()
+                    aux.append(lookahead)
+                    entrada.pop(0)  # consumir de la entrada
+                    if tope == '$' and lookahead == '$':
+                        es_a = 1
+                    else:
+                        lookahead = entrada[0]
+                else:
+                    es_r = 0
+            if es_a:
+                break
+        return derivaciones
