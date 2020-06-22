@@ -3,7 +3,6 @@ lista = []
 first = []
 follow = []
 select = []
-reservadas = ["lambda"]
 
 class Gramatica:
 
@@ -32,12 +31,6 @@ class Gramatica:
             self.no_terminales = Gramatica.calculo_no_terminales(producciones)
             self.terminales = Gramatica.calculo_terminales(producciones)
             self.LL1 = Gramatica.isLL1(self)
-        print('FIRST')
-        print(self.first)
-        print('FOLLOW')
-        print(self.follows)
-        print('SELECT')
-        print(self.selects)
 
     def calculo_antecedentes(producciones):
         lista_antecedentes = []
@@ -281,29 +274,6 @@ class Gramatica:
                     break
                 else:
                     lista_selects.append(s)
-            if not es_LL1:
-                break
-                print("\nParsingTable\n")
-                #table = {}
-                for key in producciones:
-                    for value in producciones[key]:
-                        if value != 'lambda':
-                            for elemento in first(value, reglas):
-                                print(elemento)
-                                TablaGenerada[key, elemento] = value
-                for key, val in TablaGenerada.items():
-                    print(key, "=>", val)
-                new_table = {}
-                for pair in TablaGenerada:
-                    new_table[pair[1]] = {}
-                for pair in TablaGenerada:
-                    new_table[pair[1][pair[0]]] = TablaGenerada[pair]
-                print("\n\nTable\n")
-                print(producciones.DataFrame(new_table).fillna('-'))
-                print("\n")
-                # Validar si es recursivo
-
-        # RESULTADO FINAL
         return es_LL1
 
     def parse(self, cadena):
@@ -327,16 +297,3 @@ class Gramatica:
         Partiendo del distinguido, todas las reglas que se aplicarían
         hasta llegar a esa cadena. X=>X Y=>b Y=>b d
         """
-
-reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d" #ESTÁ OK. ES LL1.
-#reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda" # ESTA OK. NO ES LL1.
-#reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a' #ESTA OK. NO ES LL1.
-#reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda' #ESTÁ OK - ES LL1
-#reglas = "S:a S e\nS:A z\nA:B\nA:b B e\nA:C\nB:c C e\nB:d\nC:b" #ESTÁ OK - NO ES LL1.
-#reglas = "S:+ B\nS:- B\nS:d A\nB:d A\nA:d A\nA:. F\nA:e C\nA:lambda\nF:d G\nG:d G\nG:e G\nG:lambda\nX:+ H\nX:- H\nX:d D\nH:d D\nH:lambda\nE:lambda" #ESTÁ OK. ES LL1.
-#reglas = "F:X Y\nX:a B R\nX:a C Q\nB:b\nB:d\nC:e\nC:b\nR:r\nQ:q\nY:b" #ESTA OK. NO ES LL1.
-#reglas = "E:E + E\nE:E - E\nE:E\nE:n" #RECURSIVIDAD. DEVUELVE FALSE EN LL1. OK
-#reglas = "X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d" #RECURSIVIDAD. DEVUELVE FALSE EN LL1. OK
-#reglas = "A:b A\nA:a\nA:A B c\nA:lambda\nB:b" #RECURSIVIDAD. DEVUELVE FALSE EN LL1. OK.
-
-nuevaGramatica = Gramatica(reglas)
