@@ -19,19 +19,25 @@ class Gramatica:
         producciones = gramatica.split('\n')  # Genera una lista con cada producción
         self.gramatica = producciones
         calculo_first = []
-        calculo_first = Gramatica.calc_first(producciones)
+        calculo_first = Gramatica.calcular_first(producciones)
         self.first = calculo_first #le paso las producciones como parámetro
         if 'Recursividad' in calculo_first:
             self.follows = 'Recursividad'
             self.selects = 'Recursividad'
             self.LL1 = False
         else:
-            self.follows = Gramatica.calc_follows(self.gramatica)
-            self.selects = Gramatica.calc_select(self.gramatica, self.first, self.follows)
+            self.follows = Gramatica.calcular_follows(self.gramatica)
+            self.selects = Gramatica.calcular_select(self.gramatica, self.first, self.follows)
             self.antecedentes = Gramatica.calculo_antecedentes(producciones)
             self.no_terminales = Gramatica.calculo_no_terminales(producciones)
             self.terminales = Gramatica.calculo_terminales(producciones)
             self.LL1 = Gramatica.isLL1(self)
+        print('FIRST')
+        print(self.first)
+        print('FOLLOW')
+        print(self.follows)
+        print('SELECT')
+        print(self.selects)
 
     def calculo_antecedentes(producciones):
         lista_antecedentes = []
@@ -61,7 +67,7 @@ class Gramatica:
                         lista_terminales.append(c)
         return lista_terminales
 
-    def calc_first(reglas):  # calculo de first para una regla pasada como parámetro.
+    def calcular_first(reglas):  # calculo de first para una regla pasada como parámetro.
         primeros = []
         FirstPorRegla = []
         indice = 0
@@ -79,8 +85,7 @@ class Gramatica:
                 break
             if str.isupper(primer_consecuente[0]):  # Si la primera letra del primer consecuente empieza con mayúscula, es NT.
                 no_terminal = consecuentes[0]  # Guardo el no terminal en una variable.
-                aux_first = Gramatica.busq_terminal(no_terminal, r, reglas)
-                # aux_first = busq_terminal(no_terminal, r, reglas)  # Busco los first del no terminal que tengo como first.
+                aux_first = Gramatica.busqueda_first(no_terminal, r, reglas)
                 union.clear()
                 for a in aux_first:
                     union.append(a)
@@ -105,7 +110,7 @@ class Gramatica:
                     FirstPorRegla[elemento] = listaNueva2
         return FirstPorRegla  # lista de first para cada antecedente
 
-    def busq_terminal(noterminal, regla, producciones):
+    def busqueda_first(noterminal, regla, producciones):
         concate = []
         concat = []
         primeros = []
@@ -127,7 +132,7 @@ class Gramatica:
                                 else:  # Si ese NT no es el último elemento, puede venir otro NT o un terminal.
                                     elemento_siguiente = list(divisionConsecuenteRegla[ind + 1])
                                     if str.isupper(elemento_siguiente[0]):  # Si es mayúscula, calcular firsts.
-                                        auxiliar = Gramatica.busq_terminal(divisionConsecuenteRegla[ind + 1], regla, producciones)
+                                        auxiliar = Gramatica.busqueda_first(divisionConsecuenteRegla[ind + 1], regla, producciones)
                                         if 'lambda' in auxiliar:
                                             primeros.append('lambda')
                                         for u in auxiliar:
@@ -156,7 +161,7 @@ class Gramatica:
                         primeros.append(auxiliar3)
         return primeros
 
-    def calc_follows(reglas):
+    def calcular_follows(reglas):
         aux_first = []
         lista_extra = []
         lista_follows = []
@@ -164,7 +169,7 @@ class Gramatica:
         lista_antecedentes = Gramatica.calculo_no_terminales(reglas)
         for a in range(0, len(lista_antecedentes)): #Por cada antecedente que encuentro, le creo una lista vacía. Resultado va a ser lista de listas.
             lista_follows.insert(a, [])
-        lista_First = Gramatica.calc_first(reglas)
+        lista_First = Gramatica.calcular_first(reglas)
         for m in lista_First:
                 if 'Recursividad' in lista_First:
                     lista_follows.append('Recursividad')
@@ -189,16 +194,16 @@ class Gramatica:
                             if str.islower(siguiente):  # si el siguiente elemento es minusculas, es un terminal.
                                 lista_follows[i].append(siguiente)
                             else:  # buscar los first de ese elemento. Es un NT. primer follow.
-                                lista_extra = Gramatica.buscar_first(reglas[x],siguiente,reglas,lista_follows)
+                                lista_extra = Gramatica.busqueda_follow(reglas[x],siguiente,reglas,lista_follows)
                                 for item in lista_extra:
                                     if item not in lista_follows[i]:
                                         lista_follows[i].extend(item)
         return lista_follows
 
-    def buscar_first(regla, cons, producciones, follow_list):  # llega regla y el consecuente siguiente.
+    def busqueda_follow(regla, cons, producciones, follow_list):  # llega regla y el consecuente siguiente.
         first_retorno = []
         newlist = []
-        aux_first = Gramatica.calc_first(producciones) # first de todas las reglas.
+        aux_first = Gramatica.calcular_first(producciones) # first de todas las reglas.
         for n in range(0, len(producciones)):  # Por cada regla
             dividir = producciones[n].split(":")
             if dividir[0] == cons:  # Encontré la posición del first. (m).
@@ -214,7 +219,6 @@ class Gramatica:
                                         if lista_antecedentes[g] == divRegla[0]:
                                             for fol in follow_list[g]:
                                                 if fol not in first_retorno:
-                                                    #newlist.append(fol)
                                                     first_retorno.append(fol)
                                 else:
                                     prox_siguiente = cons_regla[h+1]
@@ -222,7 +226,7 @@ class Gramatica:
                                         if prox_siguiente not in first_retorno:
                                             first_retorno.append(prox_siguiente)
                                     else:
-                                        nueva_lista = Gramatica.buscar_first(regla, prox_siguiente, producciones, follow_list)
+                                        nueva_lista = Gramatica.busqueda_follow(regla, prox_siguiente, producciones, follow_list)
                                         for k in nueva_lista:
                                             if k not in first_retorno:
                                                 first_retorno.append(k)
@@ -231,7 +235,7 @@ class Gramatica:
                             first_retorno.append(aux_first[n])
         return first_retorno
 
-    def calc_select(reglas, listaFirst, listaFollow):
+    def calcular_select(reglas, listaFirst, listaFollow):
         SelectsPorRegla = []
         lista_antecedentes = []
         lista_no_terminales = []
@@ -302,9 +306,6 @@ class Gramatica:
         # RESULTADO FINAL
         return es_LL1
 
-
-
-
     def parse(self, cadena):
         """Retorna la derivación para una cadena dada utilizando las
            producciones de la gramática y los conjuntos de Fi, Fo y Se
@@ -326,9 +327,8 @@ class Gramatica:
         Partiendo del distinguido, todas las reglas que se aplicarían
         hasta llegar a esa cadena. X=>X Y=>b Y=>b d
         """
-        pass
 
-#reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d" #ESTÁ OK. ES LL1.
+reglas = "S:A B\nA:a A\nA:c\nA:lambda\nB:b B\nB:d" #ESTÁ OK. ES LL1.
 #reglas = "S:X Y Z\nX:a\nX:b\nX:lambda\nY:a\nY:d\nY:lambda\nZ:e\nZ:f\nZ:lambda" # ESTA OK. NO ES LL1.
 #reglas = 'S:A b\nS:B a\nA:a A\nA:a\nB:a' #ESTA OK. NO ES LL1.
 #reglas = 'S:A B c\nA:a\nA:lambda\nB:b\nB:lambda' #ESTÁ OK - ES LL1
@@ -338,8 +338,5 @@ class Gramatica:
 #reglas = "E:E + E\nE:E - E\nE:E\nE:n" #RECURSIVIDAD. DEVUELVE FALSE EN LL1. OK
 #reglas = "X:X Y\nX:e\nX:b\nX:lambda\nY:a\nY:d" #RECURSIVIDAD. DEVUELVE FALSE EN LL1. OK
 #reglas = "A:b A\nA:a\nA:A B c\nA:lambda\nB:b" #RECURSIVIDAD. DEVUELVE FALSE EN LL1. OK.
-
-
-#reglas = "E:T A\nA:+ T A\nA:- T A\nA:lambda\nT:F B\nB:* F B\nB:/ F B\nB:lambda\nF:n\nF:(E)" #VER FIRSTS y FOLLOWS
 
 nuevaGramatica = Gramatica(reglas)
