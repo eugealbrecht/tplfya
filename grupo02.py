@@ -303,13 +303,11 @@ class Gramatica:
                     self.tabla[NT, '$'] = ([])
                     for term in self.terminales:
                         if term != 'lambda':
-                            # por cada combinación de terminal y no terminal, colocamos los consecuentes
                             self.tabla[NT, term] = ([])
                             for NT in self.no_terminales:
                                 self.tabla[NT, '$'] = ([])
                                 for term in self.terminales:
                                     if term != 'lambda':
-                                        # por cada combinación de terminal y no terminal, colocamos los consecuentes
                                         self.tabla[NT, term] = ([])
                                         contador = 0
                                         lista = self.selects
@@ -321,7 +319,7 @@ class Gramatica:
 
         c_en = cadena.split(" ")
         derivaciones = self.distinguido
-        pila = []  # se irá modificando, lo que se inserta va al revés
+        pila = []
         pila.append('$')
         pila.append(self.distinguido)
         lookahead = c_en[0]
